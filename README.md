@@ -1,4 +1,4 @@
-solar_sense_app
+Solar Sense App
 ==============================
 
 An app which allows users to get an estimated Solar PV system design specification and price esimate based on inputed energy needs.
