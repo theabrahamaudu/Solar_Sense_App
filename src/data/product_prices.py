@@ -88,7 +88,7 @@ def round_to_nearest_500(price):
     return round(price / 500) * 500
 
 
-def get_average_prices_by_search_terms(products_dict):
+def get_average_prices(products_dict):
     results_dict = {}
     table_data = {}
 

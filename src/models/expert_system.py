@@ -50,7 +50,8 @@ def battery_bank_spec(load: int,
 def solar_spec(panel_type: str,
                consumption: int, 
                inverter_spec: str,
-               peak_sun_hrs: int,
+               offgrid: bool,
+               peak_sun_hrs: int = 5,
                panel_eff: int = 0.75) -> tuple:
     
     sys_volt = int(re.search(r'\b(\d+)V\b', inverter_spec).group(1))
@@ -61,6 +62,11 @@ def solar_spec(panel_type: str,
     panel_multiples = sys_volt/panel_volt
 
     req_capacity = consumption/(peak_sun_hrs * panel_eff)
+
+    # Check if the system is offgrid and adjust  required capacity
+    if offgrid==False:
+        req_capacity = req_capacity/2
+        
 
     num_panels = req_capacity/panel_watt
 
