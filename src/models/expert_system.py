@@ -43,7 +43,8 @@ def battery_bank_spec(load: int,
     rounded_batteries = round(num_batteries)
     if rounded_batteries != 1 and rounded_batteries % battery_multiples != 0:
         rounded_batteries += 1
-
+    elif rounded_batteries==0:
+        rounded_batteries += 1
     return (b_type, rounded_batteries, consumption)
 
 

@@ -273,7 +273,7 @@ def solar_sense_app():
 
             # Format display version
             final_quote_display = final_quote.applymap(lambda x: '{:,}'.format(x) if isinstance(x, int) else x)
-            st.table(final_quote_display)
+            st.table(final_quote_display.reset_index(drop=True).assign(**{'S/N': lambda x: x.index + 1}).set_index('S/N'))
 
             st.subheader(f"Estimated total installation fee: ₦{total_cost:{','}}")
         
@@ -312,9 +312,9 @@ def solar_sense_app():
             # Wiring and Mounts Calc and Quote
             wiring_qoute = {
                 "Item": "Wiring and Mounts",
-                "Unit Price": int(sum(quote_data["Cost"]) * 0.02),
+                "Unit Price": int(sum(quote_data["Cost"]) * 0.03),
                 "Units": "-",
-                "Cost": int(sum(quote_data["Cost"]) * 0.05)
+                "Cost": int(sum(quote_data["Cost"]) * 0.03)
             }
 
             # Installation Calc and Quote
@@ -333,7 +333,7 @@ def solar_sense_app():
 
             # Format display version
             final_quote_display = final_quote.applymap(lambda x: '{:,}'.format(x) if isinstance(x, int) else x)
-            st.table(final_quote_display)
+            st.table(final_quote_display.reset_index(drop=True).assign(**{'S/N': lambda x: x.index + 1}).set_index('S/N'))
 
             st.subheader(f"Estimated total installation fee: ₦{total_cost:{','}}")
 
