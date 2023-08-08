@@ -6,7 +6,7 @@ import re
 
 
 def inverter_spec(load: int, products: dict) -> str:
-    req_capacity = (load / 0.71) / 1000  # Required capacity in kVA
+    req_capacity = (load / 0.69) / 1000  # Required capacity in kVA
 
     suitable_inverter = None
     for inverter, description in products.items():
@@ -47,7 +47,7 @@ def battery_bank_spec(load: int,
     return (b_type, rounded_batteries, consumption)
 
 
-def solar_spec(panel_type: str,
+def array_spec(panel_type: str,
                consumption: int, 
                inverter_spec: str,
                offgrid: bool,
@@ -75,10 +75,12 @@ def solar_spec(panel_type: str,
     rounded_panels = round(num_panels)
     if rounded_panels != 1 and rounded_panels % panel_multiples != 0:
         rounded_panels += 1
+    elif rounded_panels==0:
+        rounded_panels += 1
 
     controller_capacity = (rounded_panels * panel_watt)/sys_volt
 
-    return (rounded_panels, controller_capacity)
+    return (panel_type, rounded_panels, controller_capacity)
 
 
 def find_combination(p, q, r):
@@ -102,12 +104,17 @@ def controller_spec(controller_capacity: float,
     mppt_controllers = []
     pwm_controllers = []
 
+    mppt_names = []
+    pwm_names = []
+
     # Iterate through the products dictionary to categorize controllers based on type
     for product_name, product_desc in products.items():
         if "MPPT" in product_desc:
             mppt_controllers.append(float(re.search(r'\b(\d+)A\b', product_desc).group(1)))
+            mppt_names.append(product_name)
         elif "PWM" in product_desc:
             pwm_controllers.append(float(re.search(r'\b(\d+)A\b', product_desc).group(1)))
+            pwm_names.append(product_name)
 
     # Select the closest capacity from the respective controller type list
     if controller_type == "MPPT":
@@ -125,6 +132,13 @@ def controller_spec(controller_capacity: float,
     capacity, num_controllers = find_combination(selected_capacity_list,
                                                  multi_range,
                                                  controller_capacity)
+    # Get controller name
+    if controller_type == "MPPT":
+        controller_name = [name for name in mppt_names if str(int(capacity)) in name][0]
+    elif controller_type == "PWM":
+        controller_name = [name for name in pwm_names if str(int(capacity)) in name][0]
+    else:
+        raise ValueError("Invalid controller_type. Use 'MPPT' or 'PWM'.")
 
     # Return the best combination
-    return controller_type, capacity, num_controllers
+    return controller_name, num_controllers
